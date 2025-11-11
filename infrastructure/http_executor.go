@@ -21,10 +21,10 @@ type Executor struct {
 
 func defaultTransport(cfg config.Config) *http.Transport {
 	return &http.Transport{
-		MaxIdleConns:        100_000,
-		MaxConnsPerHost:     100_000,
-		DisableKeepAlives:   cfg.NoKeepAlive,
-		DisableCompression:  false,
+		MaxIdleConns:       100_000,
+		MaxConnsPerHost:    100_000,
+		DisableKeepAlives:  cfg.NoKeepAlive,
+		DisableCompression: false,
 	}
 }
 

@@ -12,19 +12,20 @@ import (
 )
 
 type Config struct {
-	TargetURL      string
-	Method         string
-	Concurrency    int
-	Duration       time.Duration
-	Rate           int // req/s, 0 = unlimited
-	Mode           string
-	NoKeepAlive    bool
-	ProxyFile      string
-	JsonBody       string
-	HeadersJSON    string
-	ContentType    string
-	Headers        map[string]string
-	Proxies        []string
+	TargetURL   string
+	Method      string
+	Concurrency int
+	Duration    time.Duration
+	Rate        int // req/s, 0 = unlimited
+	Mode        string
+	NoKeepAlive bool
+	ProxyFile   string
+	JsonBody    string
+	HeadersJSON string
+	ContentType string
+	Headers     map[string]string
+	Proxies     []string
+	ListenAddr  string
 }
 
 func Load() Config {
@@ -40,6 +41,7 @@ func Load() Config {
 	viper.SetDefault("MODE", "wg")
 	viper.SetDefault("NO_KEEP_ALIVE", false)
 	viper.SetDefault("CONTENT_TYPE", "application/json")
+	viper.SetDefault("LISTEN_ADDR", "")
 
 	dur, err := time.ParseDuration(viper.GetString("DURATION"))
 	if err != nil {
@@ -58,6 +60,7 @@ func Load() Config {
 		JsonBody:    viper.GetString("JSON_BODY"),
 		HeadersJSON: viper.GetString("HEADERS_JSON"),
 		ContentType: viper.GetString("CONTENT_TYPE"),
+		ListenAddr:  viper.GetString("LISTEN_ADDR"),
 	}
 
 	if cfg.JsonBody != "" && cfg.ContentType == "" {
