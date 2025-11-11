@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/schollz/progressbar/v3"
 	"go-load-lab/config"
 	"go-load-lab/domain"
 	"go-load-lab/infrastructure"
@@ -20,7 +19,7 @@ func (r *SemaphoreRunner) Run(
 	executor *infrastructure.Executor,
 	target domain.Target,
 	results chan<- domain.Result,
-	bar *progressbar.ProgressBar,
+	progress domain.Progress,
 ) {
 	sem := make(chan struct{}, r.Cfg.Concurrency)
 	ticker := r.makeTicker()
@@ -47,7 +46,7 @@ func (r *SemaphoreRunner) Run(
 
 				res := executor.Do(target)
 				results <- res
-				_ = bar.Add(1)
+				_ = progress.Add(1)
 			}()
 		}
 	}

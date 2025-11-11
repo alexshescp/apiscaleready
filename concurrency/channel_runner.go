@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/schollz/progressbar/v3"
 	"go-load-lab/config"
 	"go-load-lab/domain"
 	"go-load-lab/infrastructure"
@@ -21,7 +20,7 @@ func (r *ChannelRunner) Run(
 	executor *infrastructure.Executor,
 	target domain.Target,
 	results chan<- domain.Result,
-	bar *progressbar.ProgressBar,
+	progress domain.Progress,
 ) {
 	jobs := make(chan struct{}, r.Cfg.Concurrency*10)
 
@@ -57,7 +56,7 @@ func (r *ChannelRunner) Run(
 				case <-jobs:
 					res := executor.Do(target)
 					results <- res
-					_ = bar.Add(1)
+					_ = progress.Add(1)
 				}
 			}
 		}()

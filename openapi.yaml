@@ -1,0 +1,161 @@
+openapi: 3.0.3
+info:
+  title: Go Load Lab API
+  version: 1.0.0
+  description: |
+    HTTP interface for triggering load tests using Go Load Lab. The API exposes
+    endpoints for running tests programmatically and checking service health.
+servers:
+  - url: http://localhost:8080
+paths:
+  /healthz:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is ready to receive requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '405':
+          description: Method not allowed
+  /tests:
+    post:
+      summary: Run a load test
+      operationId: runTest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestRequest'
+      responses:
+        '200':
+          description: Test completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+        '400':
+          description: Invalid configuration
+        '405':
+          description: Method not allowed
+components:
+  schemas:
+    TestRequest:
+      type: object
+      properties:
+        target_url:
+          type: string
+          format: uri
+          description: Target endpoint to load-test. If omitted the server default is used.
+          example: https://example.com/api
+        method:
+          type: string
+          description: HTTP method for requests.
+          example: GET
+        concurrency:
+          type: integer
+          minimum: 1
+          description: Number of concurrent workers.
+          example: 10
+        duration:
+          type: string
+          description: Test duration expressed as a Go duration string.
+          example: 30s
+        rate:
+          type: integer
+          minimum: 0
+          description: Optional rate limit in requests per second. Zero disables throttling.
+          example: 250
+        mode:
+          type: string
+          description: Concurrency strategy (wg, channel, semaphore).
+          example: wg
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Extra headers added to every request.
+        body:
+          type: string
+          description: Request payload. Use JSON to send structured data.
+          example: '{"hello":"world"}'
+        no_keep_alive:
+          type: boolean
+          description: Disable HTTP keep-alives when true.
+      required: []
+    TestResponse:
+      type: object
+      properties:
+        duration:
+          type: string
+          description: Human-readable test duration.
+          example: 1.234s
+        metrics:
+          $ref: '#/components/schemas/MetricsSummary'
+      required:
+        - duration
+        - metrics
+    MetricsSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          example: 1000
+        success:
+          type: integer
+          format: int64
+          example: 995
+        errors:
+          type: integer
+          format: int64
+          example: 5
+        rps:
+          type: number
+          format: double
+          example: 150.5
+        latency:
+          $ref: '#/components/schemas/LatencySummary'
+      required:
+        - total
+        - success
+        - errors
+        - rps
+    LatencySummary:
+      type: object
+      properties:
+        min:
+          type: string
+          example: 1.20ms
+        max:
+          type: string
+          example: 900.00ms
+        mean:
+          type: string
+          example: 20.00ms
+        std_dev:
+          type: string
+          example: 5.50ms
+        p50:
+          type: string
+          example: 18.00ms
+        p95:
+          type: string
+          example: 50.00ms
+        p99:
+          type: string
+          example: 75.00ms
+        p999:
+          type: string
+          example: 90.00ms
+        p9999:
+          type: string
+          example: 110.00ms

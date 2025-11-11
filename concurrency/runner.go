@@ -3,7 +3,6 @@ package concurrency
 import (
 	"context"
 
-	"github.com/schollz/progressbar/v3"
 	"go-load-lab/domain"
 	"go-load-lab/infrastructure"
 )
@@ -15,6 +14,6 @@ type Runner interface {
 		executor *infrastructure.Executor,
 		target domain.Target,
 		results chan<- domain.Result,
-		bar *progressbar.ProgressBar,
+		progress domain.Progress,
 	)
 }
